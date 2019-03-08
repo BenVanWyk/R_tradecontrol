@@ -44,28 +44,6 @@ DFT_x <- DFT1 %>%  # filtered to contain last 20 orders for each system
 DFT_x1 <- DFT1 %>% 
    anti_join(DFT_x, by = "MagicNumber")  
   
-# disable systems in the slave terminal before deleting them
-# terminal 3 path *** make sure to customize this path
-path_T3 <- "C:/Program Files (x86)/FxPro - Terminal3/MQL4/Files/"
-
-# delete control parameters of affected systems
-# vector of magic number names
-control_files <- DFT_x %$% MagicNumber
-for (CTRLN in control_files) {
-  # CTRLN <- 8118101
-  CTRL_FILE <- file.path("C:/Users/fxtrams/Documents/000_TradingRepo/R_tradecontrol/_RL/control", paste0(CTRLN, ".rds"))
-  if(file.exists(CTRL_FILE)){
-    file.remove(CTRL_FILE)
-  }
-}
-
-# generate trading systems with correct magic number to disactivate
-DFT_x %>% 
-  mutate(MagicNumber = MagicNumber + 200, 
-         IsEnabled = 0) %>% 
-  # Write command "disable"
-  writeCommandViaCSV(path_T3)
-
 # write file OrdersResultsT1.csv unfortunately old records will not be visible for trading journal :)
 write_csv(DFT_x1, path = file.path(path_T1, "OrdersResultsT1.csv"),col_names = F)
 
